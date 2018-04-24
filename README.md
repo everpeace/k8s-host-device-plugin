@@ -1,4 +1,4 @@
-# k8s-host-device-plugin
+# k8s-host-device-plugin [![Docker Automated build](https://img.shields.io/docker/automated/everpeace/k8s-host-device-plugin.svg)](https://hub.docker.com/r/everpeace/k8s-host-device-plugin)
 
 This is a very thin device plugin which just exposing device files in host to containers.
 
