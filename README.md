@@ -29,7 +29,6 @@ kubectl create -f host-device-plugin.yaml
 # this requests 10 everpeace-random resources. (10 is meaningless.)
 kubectl create -f test-pod.yaml
 ```
-\
 
 ## Practical example
 
