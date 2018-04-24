@@ -19,7 +19,8 @@ cd example
 #   - host device file: /dev/random
 #   - container path to be mounted: /dev/everpeace-mount
 #   - permission: "r"
-#   - number of devices:  100  (github.com/everpeace-random: 100)
+#   - number of devices:  100  # please make this value sufficiently large, 
+#                              # in this case, capacity is `github.com/everpeace-random: 100`
 kubectl create -f host-devices.yaml
 
 # deploy device plugin
