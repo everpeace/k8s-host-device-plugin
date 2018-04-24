@@ -21,7 +21,6 @@ spec:
         operator: Exists
       containers:
       - image: everpeace/k8s-host-device-plugin:latest
-        imagePullPolicy: IfNotPresent
         name: k8s-host-device-plugin-ctr
         securityContext:
           allowPrivilegeEscalation: false
