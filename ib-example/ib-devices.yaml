@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ib-devices
+  namespace: kube-system
+data:
+  config.json: |
+    {
+      "resourceName": "github.com/everpeace-ib",
+      "socketName": "everpeace-ib.sock",
+      "numDevices": 1000,
+      "hostDevices": [{
+        "hostPath": "/dev/infiniband/uverbs0",
+        "containerPath": "/dev/infiniband/uverbs0",
+        "permission": "rwm"
+      },{
+        "hostPath": "/dev/infiniband/rdma_cm",
+        "containerPath": "/dev/infiniband/rdma_cm",
+        "permission": "rwm"
+      }]
+    }

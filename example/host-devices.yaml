@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: host-devices
+  namespace: kube-system
+data:
+  config.json: |
+    {
+      "resourceName": "github.com/everpeace-random",
+      "socketName": "everpeace-random.sock",
+      "numDevices": 100,
+      "hostDevices": [{
+        "hostPath": "/dev/random",
+        "containerPath": "/dev/everpeace-random",
+        "permission": "r"
+      }]
+    }
