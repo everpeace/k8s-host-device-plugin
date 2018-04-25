@@ -37,3 +37,8 @@ kubectl create -f test-pod.yaml
 ## Practical example
 
 If you wanted to expose infiniband devices,  please look into [ib-example](ib-example) directory
+
+
+## Release Notes
+### `1.10.1-0.0.1`
+first release
