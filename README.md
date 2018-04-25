@@ -6,6 +6,9 @@ Those device files are assumed to be non limited resources, things like "capabil
 
 However, due to [kubernetes/kubernetes#59380](https://github.com/kubernetes/kubernetes/issues/59380),  current device plugin(`v1beta1`) doesn't support unlimited extended resources.  Currently a hack would be to set the number of resources advertised by the device plugin to a very high mumber.
 
+## Versioning(Tag) Convention
+`$KUBEERNETES_VERSION`-`K8S_HOST_DEVICE_PLUGIN_VERSION`
+
 ## How to
 
 see [example](example) folder.
@@ -19,7 +22,7 @@ cd example
 #   - host device file: /dev/random
 #   - container path to be mounted: /dev/everpeace-mount
 #   - permission: "r"
-#   - number of devices:  100  # please make this value sufficiently large, 
+#   - number of devices:  100  # please make this value sufficiently large,
 #                              # in this case, capacity is `github.com/everpeace-random: 100`
 kubectl create -f host-devices.yaml
 
