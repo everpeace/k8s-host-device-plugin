@@ -42,3 +42,6 @@ If you wanted to expose infiniband devices,  please look into [ib-example](ib-ex
 ## Release Notes
 ### `1.10.1-0.0.1`
 first release
+
+### `1.11.1-0.0.1`
+just bump k8s version for `0.0.1`
