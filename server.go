@@ -45,10 +45,18 @@ type HostDevicePlugin struct {
 func NewHostDevicePlugin(config HostDevicePluginConfig) *HostDevicePlugin {
 	var devs = make([]*pluginapi.Device, config.NumDevices)
 
+	health := pluginapi.Healthy
+	for _, device := range config.HostDevices {
+		if _, err := os.Stat(device.HostPath); os.IsNotExist(err) {
+			health = pluginapi.Unhealthy
+			log.Println("HostPath '%s' is not found.", device.HostPath)
+		}
+	}
+
 	for i, _ := range devs {
 		devs[i] = &pluginapi.Device{
 			ID:     fmt.Sprint(i),
-			Health: pluginapi.Healthy,
+			Health: health,
 		}
 	}
 
