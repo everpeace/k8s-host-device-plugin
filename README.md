@@ -48,3 +48,6 @@ just bump k8s version for `0.0.1`
 
 ### `1.11.1-0.0.1`
 just bump k8s version for `0.0.1`
+
+### `1.11.1-0.0.2`
+support checking device existence [#3](https://github.com/everpeace/k8s-host-device-plugin/pull/3)
