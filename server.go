@@ -13,6 +13,10 @@ import (
 	pluginapi "k8s.io/kubernetes/pkg/kubelet/apis/deviceplugin/v1beta1"
 )
 
+const (
+	defaultHealthCheckIntervalSeconds = time.Duration(60)
+)
+
 type HostDevice struct {
 	HostPath      string `json:"hostPath"`
 	ContainerPath string `json:"containerPath"`
@@ -21,19 +25,21 @@ type HostDevice struct {
 
 // HostDevicePlugin implements the Kubernetes device plugin API
 type HostDevicePluginConfig struct {
-	ResourceName string        `json:"resourceName"`
-	SocketName   string        `json:"socketName"`
-	HostDevices  []*HostDevice `json:"hostDevices"`
-	NumDevices   int           `json:"numDevices"`
+	ResourceName               string        `json:"resourceName"`
+	SocketName                 string        `json:"socketName"`
+	HostDevices                []*HostDevice `json:"hostDevices"`
+	NumDevices                 int           `json:"numDevices"`
+	HealthCheckIntervalSeconds time.Duration `json:"healthCheckIntervalSeconds"`
 }
 
 type HostDevicePlugin struct {
-	resourceName string
-	socket       string
-	devs         []*pluginapi.Device
+	resourceName               string
+	socket                     string
+	healthCheckIntervalSeconds time.Duration
+	devs                       []*pluginapi.Device
 
 	stop   chan interface{}
-	health chan *pluginapi.Device
+	health chan string
 
 	// this device files will be mounted to container
 	hostDevices []*HostDevice
@@ -45,14 +51,7 @@ type HostDevicePlugin struct {
 func NewHostDevicePlugin(config HostDevicePluginConfig) *HostDevicePlugin {
 	var devs = make([]*pluginapi.Device, config.NumDevices)
 
-	health := pluginapi.Healthy
-	for _, device := range config.HostDevices {
-		if _, err := os.Stat(device.HostPath); os.IsNotExist(err) {
-			health = pluginapi.Unhealthy
-			log.Println("HostPath '%s' is not found.", device.HostPath)
-		}
-	}
-
+	health := getHostDevicesHealth(config.HostDevices)
 	for i, _ := range devs {
 		devs[i] = &pluginapi.Device{
 			ID:     fmt.Sprint(i),
@@ -60,15 +59,21 @@ func NewHostDevicePlugin(config HostDevicePluginConfig) *HostDevicePlugin {
 		}
 	}
 
+	healthCheckIntervalSeconds := defaultHealthCheckIntervalSeconds
+	if config.HealthCheckIntervalSeconds > 0 {
+		healthCheckIntervalSeconds = config.HealthCheckIntervalSeconds
+	}
+
 	return &HostDevicePlugin{
 		resourceName: config.ResourceName,
 		socket:       pluginapi.DevicePluginPath + config.SocketName,
+		healthCheckIntervalSeconds: healthCheckIntervalSeconds,
 
 		devs:        devs,
 		hostDevices: config.HostDevices,
 
 		stop:   make(chan interface{}),
-		health: make(chan *pluginapi.Device),
+		health: make(chan string),
 	}
 }
 
@@ -86,6 +91,17 @@ func dial(unixSocketPath string, timeout time.Duration) (*grpc.ClientConn, error
 	}
 
 	return c, nil
+}
+
+func getHostDevicesHealth(hostDevices []*HostDevice) string {
+	health := pluginapi.Healthy
+	for _, device := range hostDevices {
+		if _, err := os.Stat(device.HostPath); os.IsNotExist(err) {
+			health = pluginapi.Unhealthy
+			log.Printf("HostPath not found: %s", device.HostPath)
+		}
+	}
+	return health
 }
 
 // Start starts the gRPC server of the device plugin
@@ -112,7 +128,7 @@ func (m *HostDevicePlugin) Start() error {
 	}
 	conn.Close()
 
-	// go m.healthcheck()
+	go m.healthCheck()
 
 	return nil
 }
@@ -161,16 +177,28 @@ func (m *HostDevicePlugin) ListAndWatch(e *pluginapi.Empty, s pluginapi.DevicePl
 		select {
 		case <-m.stop:
 			return nil
-		case d := <-m.health:
-			// FIXME: there is no way to recover from the Unhealthy state.
-			d.Health = pluginapi.Unhealthy
+		case health := <-m.health:
+			// Update health of devices only in this thread.
+			for _, dev := range m.devs {
+				dev.Health = health
+			}
 			s.Send(&pluginapi.ListAndWatchResponse{Devices: m.devs})
 		}
 	}
 }
 
-func (m *HostDevicePlugin) unhealthy(dev *pluginapi.Device) {
-	m.health <- dev
+func (m *HostDevicePlugin) healthCheck() {
+	log.Printf("Starting health check every %d seconds", m.healthCheckIntervalSeconds)
+	ticker := time.NewTicker(m.healthCheckIntervalSeconds * time.Second)
+	for {
+		select {
+		case <-ticker.C:
+			m.health <- getHostDevicesHealth(m.hostDevices)
+		case <-m.stop:
+			ticker.Stop()
+			return
+		}
+	}
 }
 
 // Allocate which return list of devices.
