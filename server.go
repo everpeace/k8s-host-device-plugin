@@ -190,10 +190,16 @@ func (m *HostDevicePlugin) ListAndWatch(e *pluginapi.Empty, s pluginapi.DevicePl
 func (m *HostDevicePlugin) healthCheck() {
 	log.Printf("Starting health check every %d seconds", m.healthCheckIntervalSeconds)
 	ticker := time.NewTicker(m.healthCheckIntervalSeconds * time.Second)
+	lastHealth := ""
 	for {
 		select {
 		case <-ticker.C:
-			m.health <- getHostDevicesHealth(m.hostDevices)
+			health := getHostDevicesHealth(m.hostDevices)
+			if lastHealth != health {
+				log.Printf("Health is changed: %s -> %s", lastHealth, health)
+				m.health <- health
+			}
+			lastHealth = health
 		case <-m.stop:
 			ticker.Stop()
 			return
