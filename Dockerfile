@@ -1,13 +1,13 @@
-FROM golang:1.10.1 as build
+FROM golang:1.11 as build
 WORKDIR /go/src/k8s-host-device-plugin
 
-RUN go get github.com/golang/dep/cmd/dep
-COPY Gopkg.toml Gopkg.lock ./
-RUN dep ensure -v -vendor-only
+ARG GO111MODULE=on
+COPY go.mod go.sum ./
+RUN go mod download
 
 COPY . .
 RUN export CGO_LDFLAGS_ALLOW='-Wl,--unresolved-symbols=ignore-in-object-files' && \
-    go install -ldflags="-s -w" -v k8s-host-device-plugin
+    go install -ldflags="-s -w" 
 
 FROM debian:stretch-slim
 COPY --from=build /go/bin/k8s-host-device-plugin /bin/k8s-host-device-plugin
