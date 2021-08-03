@@ -17,12 +17,6 @@ const (
 	defaultHealthCheckIntervalSeconds = time.Duration(60)
 )
 
-type HostDevice struct {
-	HostPath      string `json:"hostPath"`
-	ContainerPath string `json:"containerPath"`
-	Permission    string `json:"permission"`
-}
-
 // HostDevicePlugin implements the Kubernetes device plugin API
 type HostDevicePluginConfig struct {
 	ResourceName               string        `json:"resourceName"`
@@ -42,7 +36,7 @@ type HostDevicePlugin struct {
 	health chan string
 
 	// this device files will be mounted to container
-	hostDevices []*HostDevice
+	hostDevices []*ExpandedHostDevice
 
 	server *grpc.Server
 }
@@ -52,10 +46,19 @@ var (
 )
 
 // NewHostDevicePlugin returns an initialized HostDevicePlugin
-func NewHostDevicePlugin(config HostDevicePluginConfig) *HostDevicePlugin {
+func NewHostDevicePlugin(config HostDevicePluginConfig) (*HostDevicePlugin, error) {
+	expandedHostDevices := []*ExpandedHostDevice{}
+	for _, hd := range config.HostDevices {
+		expanded, err := hd.Expand()
+		if err != nil {
+			return nil, err
+		}
+		expandedHostDevices = append(expandedHostDevices, expanded...)
+	}
+
 	var devs = make([]*pluginapi.Device, config.NumDevices)
 
-	health := getHostDevicesHealth(config.HostDevices)
+	health := getHostDevicesHealth(expandedHostDevices)
 	for i, _ := range devs {
 		devs[i] = &pluginapi.Device{
 			ID:     fmt.Sprint(i),
@@ -74,11 +77,11 @@ func NewHostDevicePlugin(config HostDevicePluginConfig) *HostDevicePlugin {
 		healthCheckIntervalSeconds: healthCheckIntervalSeconds,
 
 		devs:        devs,
-		hostDevices: config.HostDevices,
+		hostDevices: expandedHostDevices,
 
 		stop:   make(chan interface{}),
 		health: make(chan string),
-	}
+	}, nil
 }
 
 // dial establishes the gRPC communication with the registered device plugin.
@@ -97,7 +100,7 @@ func dial(unixSocketPath string, timeout time.Duration) (*grpc.ClientConn, error
 	return c, nil
 }
 
-func getHostDevicesHealth(hostDevices []*HostDevice) string {
+func getHostDevicesHealth(hostDevices []*ExpandedHostDevice) string {
 	health := pluginapi.Healthy
 	for _, device := range hostDevices {
 		if _, err := os.Stat(device.HostPath); os.IsNotExist(err) {

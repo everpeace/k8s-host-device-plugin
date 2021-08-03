@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: ib-device-plugin-daemonset
+  name: k8s-host-device-plugin-daemonset
   namespace: kube-system
 spec:
   selector:
     matchLabels:
-      name: ib-device-plugin-daemonset
+      name: k8s-host-device-plugin-ds
   template:
     metadata:
       # Mark this pod as a critical add-on; when enabled, the critical add-on scheduler
@@ -15,16 +15,32 @@ spec:
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ""
       labels:
-        name: ib-device-plugin-daemonset
+        name: k8s-host-device-plugin-ds
     spec:
       tolerations:
       # Allow this pod to be rescheduled while the node is in "critical add-ons only" mode.
       # This, along with the annotation above marks this pod as a critical add-on.
       - key: CriticalAddonsOnly
         operator: Exists
+      initContainers:
+      - image: busybox
+        name: create-mydevs
+        workingDir: /dev/mydevs
+        command:
+        - sh
+        - -c
+        - |
+           [ ! -e mynull0 ] && mknod mynull0 c 1 3
+           chmod 666 mynull0
+           [ ! -e mynull1 ] && mknod mynull1 c 1 3
+           chmod 666 mynull1
+        volumeMounts:
+        - name: mydevs
+          mountPath: /dev/mydevs
       containers:
       - image: everpeace/k8s-host-device-plugin:latest
         name: k8s-host-device-plugin-ctr
+        imagePullPolicy: IfNotPresent
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -34,13 +50,19 @@ spec:
             mountPath: /var/lib/kubelet/device-plugins
           - name: config
             mountPath: /k8s-host-device-plugin
+          - name: mydevs
+            mountPath: /dev/mydevs
       volumes:
         - name: device-plugin
           hostPath:
             path: /var/lib/kubelet/device-plugins
+        - name: mydevs
+          hostPath:
+            path: /dev/mydevs
+            type: DirectoryOrCreate
         - name: config
           configMap:
-            name: ib-devices
+            name: host-devices
             items:
             - key: config.json
               path: config.json

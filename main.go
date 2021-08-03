@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 	"syscall"
 
 	"github.com/fsnotify/fsnotify"
@@ -53,7 +54,17 @@ L:
 				devicePlugin.Stop()
 			}
 
-			devicePlugin = NewHostDevicePlugin(config)
+			devicePlugin, err = NewHostDevicePlugin(config)
+			if err != nil {
+				fmt.Println(err.Error())
+				os.Exit(1)
+			}
+			expandedHostDevicesStr := []string{}
+			for _, hd := range devicePlugin.hostDevices {
+				expandedHostDevicesStr = append(expandedHostDevicesStr, fmt.Sprintf("%+v", hd))
+			}
+			log.Printf("expanded host devices: %s\n", strings.Join(expandedHostDevicesStr, ","))
+
 			if err := devicePlugin.Serve(); err != nil {
 				log.Println("Could not contact Kubelet, retrying. Did you enable the device plugin feature gate?")
 			} else {

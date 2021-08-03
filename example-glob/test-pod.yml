@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: host-device-test
+spec:
+  restartPolicy: OnFailure
+  containers:
+  - image: alpine
+    name: host-device-test-ctr
+    resources:
+      limits:
+        github.com/everpeace-mydevs: 10
+    command:
+    - sh
+    - -c
+    - |
+      ls -al /dev/mydevs
+      sleep 1000000
