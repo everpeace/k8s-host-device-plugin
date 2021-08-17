@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -52,6 +53,11 @@ func (d HostDevice) Expand() ([]*ExpandedHostDevice, error) {
 	baseHostPath := strings.Split(d.HostPath, "*")[0]
 	baseContainerPath := strings.Split(d.ContainerPath, "*")[0]
 	for _, hp := range matchedHostPath {
+		fInfo, _ := os.Stat(hp)
+		if fInfo.IsDir() {
+			continue
+		}
+
 		expanded = append(expanded, &ExpandedHostDevice{
 			HostPath:      hp,
 			ContainerPath: strings.Replace(hp, baseHostPath, baseContainerPath, 1),
