@@ -4,8 +4,7 @@ go 1.16
 
 require (
 	github.com/fsnotify/fsnotify v1.4.9
-	github.com/golang/glog v0.0.0-20210429001901-424d2337a529 // indirect
-	golang.org/x/net v0.0.0-20210224082022-3d97a244fca7
-	google.golang.org/grpc v1.27.1
-	k8s.io/kubelet v0.21.3
+	golang.org/x/net v0.0.0-20210520170846-37e1c6afe023
+	google.golang.org/grpc v1.38.0
+	k8s.io/kubelet v0.22.4
 )
