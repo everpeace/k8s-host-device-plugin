@@ -58,3 +58,7 @@ support checking device existence [#3](https://github.com/everpeace/k8s-host-dev
 - upgrade kubernetes version to 1.21.3 [#7](https://github.com/everpeace/k8s-host-device-plugin/pull/7)
 - make it go module [#6](https://github.com/everpeace/k8s-host-device-plugin/pull/6)
 - Send only changes of health [#4](https://github.com/everpeace/k8s-host-device-plugin/pull/4)
+
+### `1.22.4-0.1.0`
+
+- upgrade kubernetes version to 1.22.4 [#11](https://github.com/everpeace/k8s-host-device-plugin/pull/11)
