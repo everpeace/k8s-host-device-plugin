@@ -10,8 +10,6 @@ RUN go mod download
 COPY . .
 RUN go install -ldflags="-s -w"
 
-FROM debian:buster-slim
-COPY --from=build /go/bin/k8s-host-device-plugin /bin/k8s-host-device-plugin
 FROM gcr.io/distroless/static-debian11
 COPY --from=build /go/bin/linux_amd64/k8s-host-device-plugin /bin/k8s-host-device-plugin
 
