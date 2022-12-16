@@ -11,6 +11,6 @@ COPY . .
 RUN go install -ldflags="-s -w"
 
 FROM gcr.io/distroless/static-debian11
-COPY --from=build /go/bin/linux_amd64/k8s-host-device-plugin /bin/k8s-host-device-plugin
+COPY --from=build /go/bin/k8s-host-device-plugin /bin/k8s-host-device-plugin
 
 CMD ["/bin/k8s-host-device-plugin"]
