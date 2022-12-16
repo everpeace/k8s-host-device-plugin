@@ -70,3 +70,7 @@ support checking device existence [#3](https://github.com/everpeace/k8s-host-dev
 ### `1.24.4-0.1.0`
 
 - upgrade kubernetes 1.24.4 and golang 1.19 [#16](https://github.com/everpeace/k8s-host-device-plugin/pull/16)
+
+### `1.25.4-0.1.0`
+
+- upgrade kubernetes 1.25.4 [#17](https://github.com/everpeace/k8s-host-device-plugin/pull/17)
