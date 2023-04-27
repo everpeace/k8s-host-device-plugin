@@ -75,3 +75,8 @@ support checking device existence [#3](https://github.com/everpeace/k8s-host-dev
 
 - upgrade kubernetes 1.25.4 [#17](https://github.com/everpeace/k8s-host-device-plugin/pull/17)
 - fix binary path in build container in Dockerfile [#18](https://github.com/everpeace/k8s-host-device-plugin/pull/18)
+
+### `1.26.4-0.1.0`
+
+- Upgrade Kubernetes dependencies to v1.26.4 [#22](https://github.com/everpeace/k8s-host-device-plugin/pull/22)
+
