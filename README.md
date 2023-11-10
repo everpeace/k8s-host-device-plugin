@@ -80,3 +80,6 @@ support checking device existence [#3](https://github.com/everpeace/k8s-host-dev
 
 - Upgrade Kubernetes dependencies to v1.26.4 [#22](https://github.com/everpeace/k8s-host-device-plugin/pull/22)
 
+### `1.28.3-0.1.0`
+
+- Upgrade Kubernetes dependencies to 1.28.3 [#23](https://github.com/everpeace/k8s-host-device-plugin/pull/24)
