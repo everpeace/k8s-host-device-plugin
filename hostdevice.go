@@ -48,6 +48,9 @@ func (d HostDevice) Expand() ([]*ExpandedHostDevice, error) {
 	if err != nil {
 		return nil, err
 	}
+	if len(matchedHostPath) == 0 {
+		return nil, fmt.Errorf("no file matched: %s", d.HostPath)
+	}
 
 	expanded := []*ExpandedHostDevice{}
 	baseHostPath := strings.Split(d.HostPath, "*")[0]
