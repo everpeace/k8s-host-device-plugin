@@ -27,6 +27,8 @@ type HostDevicePluginConfig struct {
 }
 
 type HostDevicePlugin struct {
+	pluginapi.UnimplementedDevicePluginServer
+
 	resourceName               string
 	socket                     string
 	healthCheckIntervalSeconds time.Duration
