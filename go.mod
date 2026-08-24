@@ -1,18 +1,17 @@
 module github.com/everpeace/k8s-host-device-plugin
 
-go 1.25.0
+go 1.26.0
 
 require (
-	github.com/fsnotify/fsnotify v1.9.0
-	golang.org/x/net v0.48.0
-	google.golang.org/grpc v1.78.0
-	k8s.io/kubelet v0.35.0
+	github.com/fsnotify/fsnotify v1.10.1
+	golang.org/x/net v0.58.0
+	google.golang.org/grpc v1.83.1
+	k8s.io/kubelet v0.36.4
 )
 
 require (
-	github.com/gogo/protobuf v1.3.2 // indirect
-	golang.org/x/sys v0.39.0 // indirect
-	golang.org/x/text v0.32.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20251222181119-0a764e51fe1b // indirect
-	google.golang.org/protobuf v1.36.11 // indirect
+	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/text v0.41.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260819154853-08b0e4226688 // indirect
+	google.golang.org/protobuf v1.36.12 // indirect
 )
