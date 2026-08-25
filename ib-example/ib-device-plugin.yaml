@@ -23,7 +23,7 @@ spec:
       - key: CriticalAddonsOnly
         operator: Exists
       containers:
-      - image: everpeace/k8s-host-device-plugin:latest
+      - image: ghcr.io/everpeace/k8s-host-device-plugin:latest
         name: k8s-host-device-plugin-ctr
         securityContext:
           allowPrivilegeEscalation: false

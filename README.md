@@ -9,6 +9,12 @@ However, due to [kubernetes/kubernetes#59380](https://github.com/kubernetes/kube
 ## Versioning(Tag) Convention
 `$KUBEERNETES_VERSION`-`K8S_HOST_DEVICE_PLUGIN_VERSION`
 
+## Container Image
+
+Container images are published to GitHub Container Registry.
+
+    ghcr.io/everpeace/k8s-host-device-plugin:<tag>
+
 ## How to
 
 see [example](example) folder.
