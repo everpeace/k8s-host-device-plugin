@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+-[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        run: make image-push
+        env:
+          IMAGE_TAGS: ${{ github.ref_name }} latest
+
+      - name: Create GitHub Release
+        run: gh release create "${GITHUB_REF_NAME}" --verify-tag --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}

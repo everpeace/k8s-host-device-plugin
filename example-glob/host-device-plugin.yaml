@@ -38,7 +38,7 @@ spec:
         - name: mydevs
           mountPath: /dev/mydevs
       containers:
-      - image: everpeace/k8s-host-device-plugin:latest
+      - image: ghcr.io/everpeace/k8s-host-device-plugin:latest
         name: k8s-host-device-plugin-ctr
         imagePullPolicy: IfNotPresent
         securityContext:
