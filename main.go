@@ -23,7 +23,7 @@ func main() {
 	log.Println("Starting FS watcher.")
 	watcher, err := newFSWatcher(pluginapi.DevicePluginPath)
 	if err != nil {
-		log.Println("Failed to created FS watcher.")
+		log.Printf("Failed to created FS watcher: %v", err)
 		os.Exit(1)
 	}
 	defer watcher.Close()
@@ -34,7 +34,7 @@ func main() {
 	log.Println("Reading /k8s-host-device-plugin/config.json")
 	raw, err := ioutil.ReadFile(ConfigFilePath)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Printf("Fatal error reading config file: %v", err)
 		os.Exit(1)
 	}
 
@@ -56,7 +56,7 @@ L:
 
 			devicePlugin, err = NewHostDevicePlugin(config)
 			if err != nil {
-				fmt.Println(err.Error())
+				log.Printf("Fatal error configuring host device: %v", err)
 				os.Exit(1)
 			}
 			expandedHostDevicesStr := []string{}
